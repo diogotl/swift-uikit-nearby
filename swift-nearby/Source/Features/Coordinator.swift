@@ -41,8 +41,10 @@ extension Coordinator: SplashViewCoordinator {
 extension Coordinator: OnboardingViewCoordinator {
     func navigateToHome() {
         let contentView = HomeView()
+        let viewModel = HomeViewModel()
         let homeViewController = HomeViewController(
             contentView: contentView,
+            viewModel: viewModel
             //coordinator: self
         )
         navigationController?.pushViewController(homeViewController, animated: true)
