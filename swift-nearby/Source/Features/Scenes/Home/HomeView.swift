@@ -19,7 +19,7 @@ class HomeView: UIView{
     
     let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
- 
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.backgroundColor = .orange
         return scrollView
@@ -31,6 +31,15 @@ class HomeView: UIView{
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
         return view
+    }()
+    
+    let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        //tableView.backgroundColor = .black
+        tableView.register(PlaceTableViewCell.self, forCellReuseIdentifier: PlaceTableViewCell.identifier)
+        tableView.separatorStyle = .none
+        return tableView
     }()
     
     override init(frame: CGRect) {
@@ -46,13 +55,12 @@ class HomeView: UIView{
         addSubview(mapView)
         addSubview(scrollView)
         addSubview(containerView)
+        containerView.addSubview(tableView)
         setupConstraints()
     }
     
     
     private func setupConstraints(){
-        
-        
         NSLayoutConstraint.activate([
             mapView.topAnchor.constraint(equalTo: self.topAnchor),
             mapView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
@@ -68,6 +76,11 @@ class HomeView: UIView{
             containerView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             containerView.topAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -16),
             containerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            
+            tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+            tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+            tableView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
+            tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant:-8)
             
         ])
     }
