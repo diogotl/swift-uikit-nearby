@@ -11,11 +11,14 @@ import UIKit
 class SplashViewController: UIViewController {
     
     private var contentView: SplashView
+    private var coordinator: SplashViewCoordinator
     
     public init(
-        contentView: SplashView
+        contentView: SplashView,
+        coordinator: SplashViewCoordinator
     ){
         self.contentView = contentView
+        self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -33,6 +36,8 @@ class SplashViewController: UIViewController {
         self.navigationController?.isNavigationBarHidden = true
         contentView.translatesAutoresizingMaskIntoConstraints = false
         setupConstraints()
+        
+        handleFlow()
     }
     
     private func setupConstraints(){
@@ -42,5 +47,11 @@ class SplashViewController: UIViewController {
             contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
         ])
+    }
+    
+    private func handleFlow(){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            self.coordinator.navigateToOnboarding()
+        }
     }
 }

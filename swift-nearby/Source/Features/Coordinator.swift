@@ -18,11 +18,35 @@ class Coordinator {
     func start() -> UINavigationController {
         let contentView = SplashView()
         let startViewController = SplashViewController(
-            contentView: contentView
+            contentView: contentView,
+            coordinator: self
         )
         
         self.navigationController = UINavigationController(rootViewController: startViewController)
         return navigationController!
     }
 }
+
+extension Coordinator: SplashViewCoordinator {
+    func navigateToOnboarding() {
+        let contentView = OnboardingView()
+        let onboardingViewController = OnboardingViewController(
+            contentView: contentView,
+            coordinator: self
+        )
+        navigationController?.pushViewController(onboardingViewController, animated: true)
+    }
+}
+
+extension Coordinator: OnboardingViewCoordinator {
+    func navigateToHome() {
+        let contentView = HomeView()
+        let homeViewController = HomeViewController(
+            contentView: contentView,
+            //coordinator: self
+        )
+        navigationController?.pushViewController(homeViewController, animated: true)
+    }
+}
+
 
