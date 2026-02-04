@@ -44,11 +44,22 @@ extension Coordinator: OnboardingViewCoordinator {
         let viewModel = HomeViewModel()
         let homeViewController = HomeViewController(
             contentView: contentView,
-            viewModel: viewModel
-            //coordinator: self
+            viewModel: viewModel,
+            coordinator: self
         )
         navigationController?.pushViewController(homeViewController, animated: true)
     }
 }
 
-
+extension Coordinator: HomeViewCoordinator{
+    func navigateToPlaceDetails(place: Place) {
+        let contentView = PlaceDetailsView()
+        
+        let homeViewController = PlaceDetailsController(
+            contentView: contentView,
+            place: place
+        )
+        
+        navigationController?.pushViewController(homeViewController, animated: true)
+    }
+}

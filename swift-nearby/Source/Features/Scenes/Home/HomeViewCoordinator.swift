@@ -6,5 +6,5 @@
 //
 
 protocol HomeViewCoordinator: AnyObject {
-    func navigateToHome()
+    func navigateToPlaceDetails(place: Place)
 }
