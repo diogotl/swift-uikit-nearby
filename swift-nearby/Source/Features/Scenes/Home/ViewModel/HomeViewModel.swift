@@ -18,11 +18,13 @@ class HomeViewModel {
     
     var places: [Place] = []
     var categories: [Category] = []
+    var selectedCategoryId: String?
     
     var filteredPlaces: [Place] = []
     
     var didUpdateCategories: (() -> Void)?
     var didUpdatePlaces: (() -> Void)?
+    var didSelectCategory: ((String) -> Void)?
     
     func fetchInitialData(completion: @escaping ([Category]) -> Void) {
         fetchCategories { categories in
@@ -33,7 +35,7 @@ class HomeViewModel {
         }
     }
     
-    private func fetchCategories(completion: @escaping ([Category]) -> Void) {
+    func fetchCategories(completion: @escaping ([Category]) -> Void) {
         
         guard let url = URL(string: "\(baseURL)/categories") else {
             return
@@ -54,6 +56,8 @@ class HomeViewModel {
                 let categories = try JSONDecoder().decode([Category].self, from: data)
                 print("foiii", categories)
                 DispatchQueue.main.async {
+                    self.categories = categories
+                    self.didUpdateCategories?()
                     completion(categories)
                 }
             } catch {
@@ -62,6 +66,11 @@ class HomeViewModel {
             }
             
         }.resume()
+    }
+    
+    func selectCategory(_ categoryId: String) {
+        self.selectedCategoryId = categoryId
+        self.didSelectCategory?(categoryId)
     }
     
     func fetchPlaces(for categoryId: String, userLocation: CLLocationCoordinate2D) {
