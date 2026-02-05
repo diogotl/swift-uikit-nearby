@@ -56,6 +56,14 @@ class HomeView: UIView{
         view.layer.cornerRadius = 2.5
         return view
     }()
+    
+    let exploreLabel: UIView = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = Typography.titleSM
+        label.text = "Explore nas suas redondezas"
+        return label
+    }()
 
     let tableView: UITableView = {
         let tableView = UITableView()
@@ -76,7 +84,6 @@ class HomeView: UIView{
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
         handleView.addGestureRecognizer(panGesture)
         
-        // Também adiciona gesture no container para poder arrastar de qualquer lugar
         let containerPanGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
         containerPanGesture.delegate = self
         containerView.addGestureRecognizer(containerPanGesture)
@@ -92,6 +99,7 @@ class HomeView: UIView{
         scrollView.addSubview(categoriesStackView)
         addSubview(containerView)
         containerView.addSubview(handleView)
+        containerView.addSubview(exploreLabel)
         containerView.addSubview(tableView)
         setupConstraints()
     }
@@ -123,35 +131,65 @@ class HomeView: UIView{
             
             handleView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
             handleView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
-            handleView.widthAnchor.constraint(equalToConstant: 40),
-            handleView.heightAnchor.constraint(equalToConstant: 5),
-
+            handleView.widthAnchor.constraint(equalToConstant: 88),
+            handleView.heightAnchor.constraint(equalToConstant: 4),
+            
+            exploreLabel.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 8),
+            exploreLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            
             tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
             tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            tableView.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 16),
+            tableView.topAnchor.constraint(equalTo: handleView.bottomAnchor, constant: 8),
             tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant:-8)
 
         ])
     }
 
     func configureCategories(_ categories: [Category]) {
+        // Mapear ícones SF Symbols para categorias
+        let categoryIcons: [String: String] = [
+            "Alimentação": "fork.knife",
+            "Cinema": "popcorn",
+            "Compras": "cart",
+            "Hospedagem": "bed.double",
+            "Padaria": "cup.and.saucer"
+        ]
+        
+        // Limpar botões existentes
         categoriesStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         categoryButtons.removeAll()
 
         for category in categories {
-            let button = UIButton(type: .system)
-            button.setTitle(category.name, for: .normal)
-            button.backgroundColor = Colors.gray100
-            button.setTitleColor(Colors.gray600, for: .normal)
-            button.layer.cornerRadius = 12
-            button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+            // Configuração moderna do botão
+            var config = UIButton.Configuration.filled()
+            config.title = category.name
+            config.image = UIImage(systemName: categoryIcons[category.name] ?? "star.fill")
+            config.imagePlacement = .leading
+            config.imagePadding = 6
+            config.baseBackgroundColor = Colors.gray100
+            config.baseForegroundColor = Colors.gray600
+            config.cornerStyle = .medium
+            config.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+            
+            let button = UIButton(configuration: config)
+            button.configurationUpdateHandler = { btn in
+                var config = btn.configuration
+                if btn.isSelected {
+                    config?.baseBackgroundColor = Colors.greenBase
+                    config?.baseForegroundColor = .white
+                } else {
+                    config?.baseBackgroundColor = Colors.gray100
+                    config?.baseForegroundColor = Colors.gray600
+                }
+                btn.configuration = config
+            }
             button.translatesAutoresizingMaskIntoConstraints = false
             button.tag = category.id.hashValue
 
-            // Store button reference
+            // Armazenar referência do botão
             categoryButtons[category.id] = button
 
-            // Add tap action
+            // Adicionar ação de toque
             button.addAction(UIAction { [weak self] _ in
                 self?.delegate?.didSelectCategory(category.id)
             }, for: .touchUpInside)
@@ -161,16 +199,14 @@ class HomeView: UIView{
     }
 
     func updateSelectedCategory(_ categoryId: String) {
-        // Reset all buttons to default state
+        // Resetar todos os botões para o estado padrão
         categoryButtons.values.forEach { button in
-            button.backgroundColor = Colors.gray100
-            button.setTitleColor(Colors.gray600, for: .normal)
+            button.isSelected = false
         }
 
-        // Highlight selected button
+        // Marcar botão selecionado
         if let selectedButton = categoryButtons[categoryId] {
-            selectedButton.backgroundColor = Colors.greenBase
-            selectedButton.setTitleColor(.white, for: .normal)
+            selectedButton.isSelected = true
         }
     }
     

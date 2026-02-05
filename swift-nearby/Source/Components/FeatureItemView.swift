@@ -18,7 +18,6 @@ class FeatureItemView: UIView {
         return imageView
     }()
     
-    
     let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -50,6 +49,7 @@ class FeatureItemView: UIView {
     }
     
     private func setupUI(){
+        
         addSubview(iconImageView)
         addSubview(titleLabel)
         addSubview(descriptionLabel)
