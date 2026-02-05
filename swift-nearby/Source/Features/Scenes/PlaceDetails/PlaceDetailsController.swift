@@ -21,9 +21,6 @@ final class PlaceDetailsController: UIViewController {
         self.contentView = contentView
         self.place = place
         super.init(nibName: nil, bundle: nil)
-        
-        print(place)
-        self.contentView.placeLabel.text = place.name
     }
     
     required init?(coder: NSCoder) {
@@ -34,6 +31,18 @@ final class PlaceDetailsController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationBar()
+        
+        // Configurar textos DEPOIS da view estar na hierarquia
+        contentView.placeLabel.text = place.name
+        contentView.descriptionLabel.text = place.description
+        contentView.availableCuponsCount.text = "\(place.coupons)"
+        contentView.phoneLabel.text = place.phone
+        contentView.addressLabel.text = place.address
+        
+        loadImage(from: place.cover)
+        
+        //contentView.setNeedsLayout()
+        //contentView.layoutIfNeeded()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -41,8 +50,38 @@ final class PlaceDetailsController: UIViewController {
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
+    private func loadImage(from urlString: String) {
+        contentView.backgroundImg.backgroundColor = Colors.gray300
+        
+        guard let url = URL(string: urlString) else {
+            print("URL inválida: \(urlString)")
+            return
+        }
+        
+        // Baixar imagem em background
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Erro ao carregar imagem: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let data = data, let image = UIImage(data: data) else {
+                print("Erro ao converter dados em imagem")
+                return
+            }
+            
+            // Atualizar UI na main thread
+            DispatchQueue.main.async {
+                self.contentView.backgroundImg.image = image
+                self.contentView.backgroundImg.backgroundColor = .clear
+            }
+        }.resume()
+    }
+    
     private func setupUI() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .black
         view.addSubview(contentView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         
